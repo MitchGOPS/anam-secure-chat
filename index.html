@@ -1,26 +1,42 @@
-<script type="module">
-import { createClient } from "https://esm.sh/@anam-ai/js-sdk@latest";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chat with Cara</title>
+</head>
 
-const statusElement = document.getElementById("status");
+<body style="text-align:center; font-family: Arial; padding: 40px;">
 
-async function createSessionToken() {
+  <h1>Chat with Cara</h1>
 
-    const response = await fetch(
-        "http://localhost:3000/session-token",
-        {
-            method: "POST",
-        }
-    );
+  <video
+    id="persona-video"
+    autoplay
+    playsinline
+    style="max-width: 100%; border-radius: 10px;"
+  ></video>
 
-    const data = await response.json();
+  <div id="status" style="margin-top: 20px; color: gray;">
+    Loading...
+  </div>
 
-    return data.sessionToken;
-}
+  <script type="module">
+    import { createClient } from "https://esm.sh/@anam-ai/js-sdk@latest";
 
-async function startChat() {
+    const statusElement = document.getElementById("status");
 
-    try {
+    async function createSessionToken() {
+      const response = await fetch("/api/session-token", {
+        method: "POST",
+      });
 
+      const data = await response.json();
+      return data.sessionToken;
+    }
+
+    async function startChat() {
+      try {
         statusElement.textContent = "Creating session...";
 
         const sessionToken = await createSessionToken();
@@ -31,18 +47,15 @@ async function startChat() {
 
         await anamClient.streamToVideoElement("persona-video");
 
-        statusElement.textContent =
-            "Connected! Start speaking.";
-
-    } catch (error) {
-
+        statusElement.textContent = "Connected! Start speaking.";
+      } catch (error) {
         console.error(error);
-
-        statusElement.textContent =
-            "Failed to connect.";
-
+        statusElement.textContent = "Failed to connect.";
+      }
     }
-}
 
-startChat();
-</script>
+    startChat();
+  </script>
+
+</body>
+</html>
