@@ -1,0 +1,48 @@
+<script type="module">
+import { createClient } from "https://esm.sh/@anam-ai/js-sdk@latest";
+
+const statusElement = document.getElementById("status");
+
+async function createSessionToken() {
+
+    const response = await fetch(
+        "http://localhost:3000/session-token",
+        {
+            method: "POST",
+        }
+    );
+
+    const data = await response.json();
+
+    return data.sessionToken;
+}
+
+async function startChat() {
+
+    try {
+
+        statusElement.textContent = "Creating session...";
+
+        const sessionToken = await createSessionToken();
+
+        statusElement.textContent = "Connecting...";
+
+        const anamClient = createClient(sessionToken);
+
+        await anamClient.streamToVideoElement("persona-video");
+
+        statusElement.textContent =
+            "Connected! Start speaking.";
+
+    } catch (error) {
+
+        console.error(error);
+
+        statusElement.textContent =
+            "Failed to connect.";
+
+    }
+}
+
+startChat();
+</script>
